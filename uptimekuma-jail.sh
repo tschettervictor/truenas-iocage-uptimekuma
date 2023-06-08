@@ -236,7 +236,7 @@ iocage exec "${JAIL_NAME}" sed -i '' "s/yourhostnamehere/${HOST_NAME}/" /usr/loc
 iocage exec "${JAIL_NAME}" sed -i '' "s/dns_plugin/${DNS_PLUGIN}/" /usr/local/www/Caddyfile
 iocage exec "${JAIL_NAME}" sed -i '' "s/api_token/${DNS_TOKEN}/" /usr/local/www/Caddyfile
 iocage exec "${JAIL_NAME}" sed -i '' "s/youremailhere/${CERT_EMAIL}/" /usr/local/www/Caddyfile
-iocage exec "${JAIL_NAME}" sed -i '' 's|console.log("Welcome to Uptime Kuma");|process.chdir('/usr/local/uptime-kuma');\n&|' /usr/local/uptime-kuma/server/server.js
+iocage exec "${JAIL_NAME}" sed -i '' 's|console.log("Welcome to Uptime Kuma");|"process.chdir('/usr/local/uptime-kuma');\n&"|' /usr/local/uptime-kuma/server/server.js
 
 # Don't need /mnt/includes any more, so unmount it
 iocage fstab -r "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
