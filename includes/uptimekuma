@@ -19,10 +19,9 @@ pidfile=${uptimekuma_pidfile:-"/var/run/uptimekuma.pid"}
 uptimekuma_chdir="/usr/local/uptime-kuma"                                                            
 HOME=/usr/local/uptime-kuma
 command="/usr/sbin/daemon"                                                                           
-#command_args="-r -u uptimekuma -P /var/run/uptimekuma.pid /usr/local/bin/node /usr/local/uptime-kuma/server/server.js" # cjayho: restart if crashed
 PATH=${PATH}:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:/root/bin                 
 export LC_CTYPE="en_US.UTF-8"                                                                       
-command_args="-u uptimekuma -P /var/run/uptimekuma.pid /usr/local/bin/node /usr/local/uptime-kuma/server/server.js --name uptime-kuma -- --port=3001 --host=0.0.0.0"
+command_args="-r -u uptimekuma -P /var/run/uptimekuma.pid /usr/local/bin/node /usr/local/uptime-kuma/server/server.js --name uptime-kuma -- --port=3001 --host=0.0.0.0"
                                                                                                     
 load_rc_config $name                                                                                 
 : ${uptimekuma_enable:="NO"}                                                                         
