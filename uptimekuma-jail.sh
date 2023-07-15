@@ -195,9 +195,10 @@ fi
 # Install uptimekuma and mount data
 iocage exec "${JAIL_NAME}" "pw user add uptimekuma -c uptimekuma -u 1001 -d /nonexistent -s /usr/bin/nologin"
 iocage exec "${JAIL_NAME}" "npm install npm -g"
-iocage exec "${JAIL_NAME}" "cd /usr/local/ && git clone https://github.com/louislam/uptime-kuma.git && cd uptime-kuma && npm run setup"
+iocage exec "${JAIL_NAME}" "cd /usr/local/ && git clone https://github.com/louislam/uptime-kuma.git"
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/uptime-kuma/data
 iocage fstab -a "${JAIL_NAME}" "${POOL_PATH}"/uptimekuma /usr/local/uptime-kuma/data nullfs rw 0 0
+iocage exec "${JAIL_NAME}" "cd /usr/local/uptime-kuma && cd npm run setup"
 iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /usr/local/uptime-kuma"
 
 # Generate and insall self-signed cert, if necessary
