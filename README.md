@@ -77,9 +77,8 @@ Visit the [Caddy download page](https://caddyserver.com/download) to see the DNS
 Once you've downloaded the script and prepared the configuration file, run this script (`script uptimekuma.log ./uptimekuma-jail.sh`).  The script will run for maybe a minute.  When it finishes, your jail will be created and uptimekuma will be installed.
 
 ### Reinstalling
-This script will check your POOL_PATH to see if it is empty. If it is, it will install uptimekuma from scratch. If it is not empty, it will copy the contents to the `/usr/local/uptime-kuma/media/data` directory, then copy them back to the `/usr/local/uptime-kuma/data` directory which is mounted outside the jail. The reason for this is that uptimekuma errors out if the directory is full, but the files can be moved back once it has started.
-You can also just back up the database file, install from scratch, and copy the database file back to your POOL_PATH.
+Reinstall is supported providing the POOL_PATH is properly set, and the data is present.
 
 ### Notes
-The uptimekuma database file is located in `/usr/local/uptime-kuma/data`
-The Caddyfile is located at `/usr/local/www/Caddyfile`
+- The uptimekuma database file is located in `/usr/local/uptime-kuma/data`
+- The Caddyfile is located at `/usr/local/www/Caddyfile`
