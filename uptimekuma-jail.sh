@@ -134,7 +134,7 @@ cat <<__EOF__ >/tmp/pkg.json
   "nano",
   "go",
   "git",
-  "npm-node20"
+  "npm-node18"
   ]
 }
 __EOF__
