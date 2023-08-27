@@ -153,21 +153,36 @@ rm /tmp/pkg.json
 #
 #####
 
-# Create uptimekuma directory on selected pool
+# Create and mount directories
+# Data directory and mounting is done after cloning the uptimekuma repository
 mkdir -p "${POOL_PATH}"/uptimekuma
-# Directory for uptimekuma data must be created after cloning the repo
-# Mounting of jail directory must happen after cloning the repo
-
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/www/
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/etc/rc.d/
-
-# Create and mount includes directory for Caddyfile
 iocage exec "${JAIL_NAME}" mkdir -p /mnt/includes
 iocage fstab -a "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
 
+
 #####
 #
-# Additional Dependency installation
+# Uptime-Kuma Installation 
+#
+#####
+
+# Currently uses version 1.22.0 as 1.23.0 is incompatible with FreeBSD
+iocage exec "${JAIL_NAME}" "pw user add uptimekuma -c uptimekuma -u 1001 -d /nonexistent -s /usr/bin/nologin"
+iocage exec "${JAIL_NAME}" "npm install npm -g"
+iocage exec "${JAIL_NAME}" "cd /usr/local/ && git clone https://github.com/louislam/uptime-kuma.git"
+iocage exec "${JAIL_NAME}" mkdir -p /usr/local/uptime-kuma/data
+iocage fstab -a "${JAIL_NAME}" "${POOL_PATH}"/uptimekuma /usr/local/uptime-kuma/data nullfs rw 0 0
+iocage exec "${JAIL_NAME}" "cd /usr/local/uptime-kuma && git checkout 1.22.0 && npm ci --production && npm run download-dist"
+iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /usr/local/uptime-kuma"
+iocage exec "${JAIL_NAME}" sed -i '' "s|console.log(\"Welcome to Uptime Kuma\");|process.chdir('/usr/local/uptime-kuma');\n&|" /usr/local/uptime-kuma/server/server.js
+iocage exec "${JAIL_NAME}" cp -f /mnt/includes/uptimekuma /usr/local/etc/rc.d/
+iocage exec "${JAIL_NAME}" sysrc uptimekuma_enable="YES"
+
+#####
+#
+# Caddy Installation
 #
 #####
 
@@ -195,16 +210,6 @@ else
     exit 1
   fi  
 fi
-
-# Install uptimekuma and mount data
-iocage exec "${JAIL_NAME}" "pw user add uptimekuma -c uptimekuma -u 1001 -d /nonexistent -s /usr/bin/nologin"
-iocage exec "${JAIL_NAME}" "npm install npm -g"
-iocage exec "${JAIL_NAME}" "cd /usr/local/ && git clone https://github.com/louislam/uptime-kuma.git"
-iocage exec "${JAIL_NAME}" mkdir -p /usr/local/uptime-kuma/data
-iocage fstab -a "${JAIL_NAME}" "${POOL_PATH}"/uptimekuma /usr/local/uptime-kuma/data nullfs rw 0 0
-iocage exec "${JAIL_NAME}" "cd /usr/local/uptime-kuma && git checkout 1.22.0 && npm ci --production && npm run download-dist"
-iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /usr/local/uptime-kuma"
-
 # Generate and insall self-signed cert, if necessary
 if [ $SELFSIGNED_CERT -eq 1 ]; then
 	iocage exec "${JAIL_NAME}" mkdir -p /usr/local/etc/pki/tls/private
@@ -213,8 +218,6 @@ if [ $SELFSIGNED_CERT -eq 1 ]; then
 	iocage exec "${JAIL_NAME}" cp /mnt/includes/privkey.pem /usr/local/etc/pki/tls/private/privkey.pem
 	iocage exec "${JAIL_NAME}" cp /mnt/includes/fullchain.pem /usr/local/etc/pki/tls/certs/fullchain.pem
 fi
-
-# Copy Caddyfile and uptimekuma files
 if [ $STANDALONE_CERT -eq 1 ] || [ $DNS_CERT -eq 1 ]; then
   iocage exec "${JAIL_NAME}" cp -f /mnt/includes/remove-staging.sh /root/
 fi
@@ -231,29 +234,23 @@ else
 	echo "Copying Caddyfile for Let's Encrypt cert"
 	iocage exec "${JAIL_NAME}" cp -f /mnt/includes/Caddyfile-standalone /usr/local/www/Caddyfile	
 fi
-
-# Copy rc.d files
-iocage exec "${JAIL_NAME}" cp -f /mnt/includes/uptimekuma /usr/local/etc/rc.d/
 iocage exec "${JAIL_NAME}" cp -f /mnt/includes/caddy /usr/local/etc/rc.d/
-
-# Edit Caddyfile
 iocage exec "${JAIL_NAME}" sed -i '' "s/yourhostnamehere/${HOST_NAME}/" /usr/local/www/Caddyfile
 iocage exec "${JAIL_NAME}" sed -i '' "s/dns_plugin/${DNS_PLUGIN}/" /usr/local/www/Caddyfile
 iocage exec "${JAIL_NAME}" sed -i '' "s/api_token/${DNS_TOKEN}/" /usr/local/www/Caddyfile
 iocage exec "${JAIL_NAME}" sed -i '' "s/youremailhere/${CERT_EMAIL}/" /usr/local/www/Caddyfile
-iocage exec "${JAIL_NAME}" sed -i '' "s|console.log(\"Welcome to Uptime Kuma\");|process.chdir('/usr/local/uptime-kuma');\n&|" /usr/local/uptime-kuma/server/server.js
+iocage exec "${JAIL_NAME}" sysrc caddy_config="/usr/local/www/Caddyfile"
+iocage exec "${JAIL_NAME}" sysrc caddy_enable="YES"
 
 # Don't need /mnt/includes any more, so unmount it
 iocage fstab -r "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
 
-# Enable and start caddy and uptimekuma service
-iocage exec "${JAIL_NAME}" sysrc caddy_enable="YES"
-iocage exec "${JAIL_NAME}" sysrc uptimekuma_enable="YES"
-iocage exec "${JAIL_NAME}" sysrc caddy_config="/usr/local/www/Caddyfile"
-iocage exec "${JAIL_NAME}" service caddy start
-iocage exec "${JAIL_NAME}" service uptimekuma start && sleep 5
+# Restart
+iocage restart "${JAIL_NAME}"
 
-echo ""
+echo "---------------"
+echo "Installation Complete!"
+echo "---------------"
 if [ $STANDALONE_CERT -eq 1 ] || [ $DNS_CERT -eq 1 ]; then
   echo "You have obtained your Let's Encrypt certificate using the staging server."
   echo "This certificate will not be trusted by your browser and will cause SSL errors"
@@ -271,11 +268,12 @@ elif [ $SELFSIGNED_CERT -eq 1 ]; then
   echo "/usr/local/etc/pki/tls/certs/fullchain.pem"
   echo ""
 fi
-
-echo "Installation complete."
-
+echo "---------------"
 if [ $NO_CERT -eq 1 ]; then
   echo "Using your web browser, go to http://${HOST_NAME} to log in"
 else
   echo "Using your web browser, go to https://${HOST_NAME} to log in"
 fi
+echo "---------------"
+echo "New installs will ask to create admin user on startup."
+echo "If this is a reinstall, use your old user and password."
