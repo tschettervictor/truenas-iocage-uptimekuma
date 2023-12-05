@@ -244,7 +244,7 @@ iocage exec "${JAIL_NAME}" sysrc caddy_config="/usr/local/www/Caddyfile"
 iocage exec "${JAIL_NAME}" sysrc caddy_enable="YES"
 
 # Don't need /mnt/includes any more, so unmount it
-iocage fstab -r "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
+#iocage fstab -r "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
 
 # Restart
 iocage restart "${JAIL_NAME}"
