@@ -3,7 +3,7 @@
 # Uptime-Kuma FreeBSD Service Script
 
 # PROVIDE: uptimekuma
-# REQUIRE: LOGIN
+# REQUIRE: NETWORKING
 # KEYWORD: shutdown
 
 . /etc/rc.subr
