@@ -158,6 +158,7 @@ rm /tmp/pkg.json
 mkdir -p "${POOL_PATH}"/uptimekuma
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/www/
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/etc/rc.d/
+iocage exec "${JAIL_NAME}" mkdir -p /var/run/uptimekuma
 iocage exec "${JAIL_NAME}" mkdir -p /mnt/includes
 iocage fstab -a "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
 
@@ -176,6 +177,7 @@ iocage exec "${JAIL_NAME}" mkdir -p /usr/local/uptime-kuma/data
 iocage fstab -a "${JAIL_NAME}" "${POOL_PATH}"/uptimekuma /usr/local/uptime-kuma/data nullfs rw 0 0
 iocage exec "${JAIL_NAME}" "cd /usr/local/uptime-kuma && git checkout 1.22.0 && npm ci --production && npm run download-dist"
 iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /usr/local/uptime-kuma"
+iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /var/run/uptimekuma"
 iocage exec "${JAIL_NAME}" sed -i '' "s|console.log(\"Welcome to Uptime Kuma\");|process.chdir('/usr/local/uptime-kuma');\n&|" /usr/local/uptime-kuma/server/server.js
 iocage exec "${JAIL_NAME}" cp -f /mnt/includes/uptimekuma /usr/local/etc/rc.d/
 iocage exec "${JAIL_NAME}" sysrc uptimekuma_enable="YES"
