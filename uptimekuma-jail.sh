@@ -169,13 +169,12 @@ iocage fstab -a "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
 #
 #####
 
-# Currently uses version 1.22.0 as 1.23.0 is incompatible with FreeBSD
 iocage exec "${JAIL_NAME}" "pw user add uptimekuma -c uptimekuma -u 1001 -d /nonexistent -s /usr/bin/nologin"
 iocage exec "${JAIL_NAME}" "npm install npm -g"
 iocage exec "${JAIL_NAME}" "cd /usr/local/ && git clone https://github.com/louislam/uptime-kuma.git"
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/uptime-kuma/data
 iocage fstab -a "${JAIL_NAME}" "${POOL_PATH}"/uptimekuma /usr/local/uptime-kuma/data nullfs rw 0 0
-iocage exec "${JAIL_NAME}" "cd /usr/local/uptime-kuma && git checkout 1.22.0 && npm ci --production && npm run download-dist"
+iocage exec "${JAIL_NAME}" "cd /usr/local/uptime-kuma && npm run setup"
 iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /usr/local/uptime-kuma"
 iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /var/run/uptimekuma"
 iocage exec "${JAIL_NAME}" sed -i '' "s|console.log(\"Welcome to Uptime Kuma\");|process.chdir('/usr/local/uptime-kuma');\n&|" /usr/local/uptime-kuma/server/server.js
