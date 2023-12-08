@@ -11,17 +11,17 @@
 load_rc_config $name
 
 : ${uptimekuma_enable:="NO"}
-: ${uptimekuma_chdir:="/usr/local/uptime-kuma/node_modules"}
 : ${uptimekuma_config:="--name uptime-kuma -- --port=3001 --host=0.0.0.0"}
 : ${uptimekuma_env:="PLAYWRIGHT_BROWSERS_PATH=/nonexistent"}
 
-name="uptimekuma"                                                                                   
+name="uptimekuma"
 rcvar="uptimekuma_enable"
+pidfile="/var/run/${name}/${name}.pid"
 command="/usr/sbin/daemon"
-pidfile="/var/run/uptimekuma/uptimekuma.pid"
-procname="/usr/local/bin/node /usr/local/uptime-kuma/server/server.js"
-PATH=${PATH}:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:/root/bin                 
-export LC_CTYPE="en_US.UTF-8"                                                                       
-command_args="-r -u ${name} -P ${pidfile} ${procname} ${uptimekuma_config}"
+procname="/usr/local/bin/node"
+proccommand="/usr/local/uptime-kuma/server/server.js"
+command_args="-r -u ${name} -P ${pidfile} ${procname} ${proccommand} ${uptimekuma_config}"
+PATH=${PATH}:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:/root/bin
+export LC_CTYPE="en_US.UTF-8"
 
 run_rc_command "$1"
