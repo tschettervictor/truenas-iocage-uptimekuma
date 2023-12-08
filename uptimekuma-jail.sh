@@ -175,10 +175,9 @@ iocage exec "${JAIL_NAME}" "npm install npm -g"
 iocage exec "${JAIL_NAME}" "cd /usr/local/ && git clone https://github.com/louislam/uptime-kuma.git"
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/uptime-kuma/data
 iocage fstab -a "${JAIL_NAME}" "${POOL_PATH}"/uptimekuma /usr/local/uptime-kuma/data nullfs rw 0 0
-iocage exec "${JAIL_NAME}" "cd /usr/local/uptime-kuma && npm run setup"
-# Dont change file permission becauses of unsupported freebsd error
 iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /usr/local/uptime-kuma"
-iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /var/run/uptimekuma/"
+iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /var/run/uptimekuma"
+iocage exec "${JAIL_NAME}" "cd /usr/local/uptime-kuma && npm run setup"
 iocage exec "${JAIL_NAME}" sed -i '' "s|console.log(\"Welcome to Uptime Kuma\");|process.chdir('/usr/local/uptime-kuma');\n&|" /usr/local/uptime-kuma/server/server.js
 iocage exec "${JAIL_NAME}" cp -f /mnt/includes/uptimekuma /usr/local/etc/rc.d/
 iocage exec "${JAIL_NAME}" sysrc uptimekuma_enable="YES"
