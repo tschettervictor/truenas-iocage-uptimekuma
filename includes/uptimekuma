@@ -16,9 +16,9 @@ load_rc_config $name
 
 name="uptimekuma"
 rcvar="uptimekuma_enable"
-pidfile="/var/run/${name}/${name}.pid"
+pidfile="/var/run/${name}/uptime-kuma.pid"
 command="/usr/sbin/daemon"
-procname="${name}"
+procname="uptime-kuma"
 proccommand="/usr/local/bin/node /usr/local/uptime-kuma/server/server.js"
 command_args="-r -u ${name} -P ${pidfile} ${proccommand} ${uptimekuma_config}"
 PATH=${PATH}:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:/root/bin
