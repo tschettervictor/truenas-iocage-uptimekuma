@@ -115,12 +115,6 @@ then
   NETMASK="24"
 fi
 
-# Check for reinstall
-if [ "$(ls -A "${POOL_PATH}"/uptimekuma)" ]; then
-	echo "Existing uptimekuma config detected..."
-	REINSTALL="true"
-fi
-
 #####
 #
 # Jail Creation
@@ -154,7 +148,6 @@ rm /tmp/pkg.json
 #####
 
 # Create and mount directories
-# Data directory and mounting is done after cloning the uptimekuma repository
 mkdir -p "${POOL_PATH}"/uptimekuma/data
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/www/
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/etc/rc.d/
@@ -172,13 +165,10 @@ iocage fstab -a "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
 iocage exec "${JAIL_NAME}" "pw user add uptimekuma -c uptimekuma -u 3001 -d /nonexistent -s /usr/bin/nologin"
 iocage exec "${JAIL_NAME}" "npm install npm -g"
 iocage exec "${JAIL_NAME}" "cd /usr/local/ && git clone https://github.com/louislam/uptime-kuma.git"
-iocage exec "${JAIL_NAME}" mkdir -p /mnt/uptimekuma
-iocage fstab -a "${JAIL_NAME}" "${POOL_PATH}"/uptimekuma /mnt/uptimekuma nullfs rw 0 0
 iocage exec "${JAIL_NAME}" "cd /usr/local/uptime-kuma && npm run setup"
 iocage exec "${JAIL_NAME}" sed -i '' "s|console.log(\"Welcome to Uptime Kuma\");|process.chdir('/usr/local/uptime-kuma');\n&|" /usr/local/uptime-kuma/server/server.js
 iocage exec "${JAIL_NAME}" cp -f /mnt/includes/uptimekuma /usr/local/etc/rc.d/
 iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /usr/local/uptime-kuma"
-iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /mnt/uptimekuma"
 iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /var/run/uptimekuma"
 iocage exec "${JAIL_NAME}" sysrc uptimekuma_enable="YES"
 
