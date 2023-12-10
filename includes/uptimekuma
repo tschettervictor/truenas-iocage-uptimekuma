@@ -9,7 +9,6 @@
 . /etc/rc.subr
 
 : ${uptimekuma_enable:="NO"}
-: ${data_dir:="/mnt/uptimekuma/data"}
 
 uptimekuma_env="PLAYWRIGHT_BROWSERS_PATH=/nonexistent"
 name="uptimekuma"
@@ -20,7 +19,7 @@ HOME=/usr/local/uptime-kuma
 command="/usr/sbin/daemon"
 PATH=${PATH}:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:/root/bin
 export LC_CTYPE="en_US.UTF-8"
-command_args="-r -u ${name} -P ${pidfile} /usr/local/bin/node /usr/local/uptime-kuma/server/server.js --name uptime-kuma -- --port=3001 --host=0.0.0.0 --data-dir=${data_dir}"
+command_args="-r -u ${name} -P ${pidfile} /usr/local/bin/node /usr/local/uptime-kuma/server/server.js --name uptime-kuma -- --port=3001 --host=0.0.0.0"
 
 load_rc_config $name
 
