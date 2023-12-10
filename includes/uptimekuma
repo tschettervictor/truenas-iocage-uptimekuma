@@ -9,7 +9,7 @@
 . /etc/rc.subr
 
 : ${uptimekuma_enable:="NO"}
-: ${data_dir:="/mnt/data"}
+: ${data_dir:="/mnt/uptimekuma/data"}
 
 uptimekuma_env="PLAYWRIGHT_BROWSERS_PATH=/nonexistent"
 name="uptimekuma"
