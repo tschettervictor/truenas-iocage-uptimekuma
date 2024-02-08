@@ -30,6 +30,7 @@ DNS_CERT=0
 NO_CERT=0
 CERT_EMAIL=""
 CONFIG_NAME="uptimekuma-config"
+CADDYSERVER="yes"
 
 # Check for uptimekuma-config and set configuration
 SCRIPT=$(readlink -f "$0")
@@ -174,6 +175,8 @@ iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /usr/local/uptime-kum
 iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /var/run/uptimekuma"
 iocage exec "${JAIL_NAME}" sysrc uptimekuma_enable="YES"
 
+if [ "${CADDYSERVER}" == "yes" ]; then
+
 #####
 #
 # Caddy Installation
@@ -235,6 +238,9 @@ iocage exec "${JAIL_NAME}" sed -i '' "s/api_token/${DNS_TOKEN}/" /usr/local/www/
 iocage exec "${JAIL_NAME}" sed -i '' "s/youremailhere/${CERT_EMAIL}/" /usr/local/www/Caddyfile
 iocage exec "${JAIL_NAME}" sysrc caddy_config="/usr/local/www/Caddyfile"
 iocage exec "${JAIL_NAME}" sysrc caddy_enable="YES"
+else
+echo "Caddyserver will not be installed."
+fi
 
 # Don't need /mnt/includes any more, so unmount it
 iocage fstab -r "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
