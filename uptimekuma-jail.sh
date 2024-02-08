@@ -162,7 +162,7 @@ iocage fstab -a "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
 #
 #####
 
-#iocage exec "${JAIL_NAME}" "pw user add uptimekuma -c uptimekuma -u 3001 -d /nonexistent -s /usr/bin/nologin"
+iocage exec "${JAIL_NAME}" "pw user add uptimekuma -c uptimekuma -u 3001 -d /nonexistent -s /usr/bin/nologin"
 iocage exec "${JAIL_NAME}" "npm install npm -g"
 iocage exec "${JAIL_NAME}" "cd /usr/local/ && git clone https://github.com/louislam/uptime-kuma.git"
 iocage exec "${JAIL_NAME}" "mkdir /usr/local/uptime-kuma/data"
