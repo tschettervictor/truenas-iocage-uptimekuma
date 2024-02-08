@@ -19,8 +19,11 @@ pidfile="/var/run/${name}/${name}.pid"
 uptimekuma_chdir=/usr/local/uptime-kuma
 HOME=/usr/local/uptime-kuma
 command="/usr/sbin/daemon"
+PATH=${PATH}:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:/root/bin
 export LC_CTYPE="en_US.UTF-8"
 command_args="-r -u ${uptimekuma_user} -P ${pidfile} /usr/local/bin/node /usr/local/uptime-kuma/server/server.js --name uptime-kuma -- --port=3001 --host=0.0.0.0"
+
+start_precmd="${name}_precmd"
 
 load_rc_config $name
 run_rc_command "$1"
