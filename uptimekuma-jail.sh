@@ -22,7 +22,6 @@ INTERFACE="vnet0"
 VNET="on"
 POOL_PATH=""
 JAIL_NAME="uptimekuma"
-HOST_NAME=""
 CONFIG_NAME="uptimekuma-config"
 
 # Check for uptimekuma-config and set configuration
@@ -63,10 +62,6 @@ if [ -z "${DEFAULT_GW_IP}" ]; then
 fi
 if [ -z "${POOL_PATH}" ]; then
   echo 'Configuration error: POOL_PATH must be set'
-  exit 1
-fi
-if [ -z "${HOST_NAME}" ]; then
-  echo 'Configuration error: HOST_NAME must be set'
   exit 1
 fi
 
@@ -144,7 +139,7 @@ iocage restart "${JAIL_NAME}"
 echo "---------------"
 echo "Installation Complete!"
 echo "---------------"
-echo "Using your web browser, go to http://${HOST_NAME}:3001 or http://${IP}:3001 to log in"
+echo "Using your web browser, go to http://${IP}:3001 to log in"
 echo "---------------"
 echo "New installs will ask to create admin user on startup."
 echo "If this is a reinstall, use your old user and password."
