@@ -175,14 +175,14 @@ iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /usr/local/uptime-kum
 iocage exec "${JAIL_NAME}" "chown -R uptimekuma:uptimekuma /var/run/uptimekuma"
 iocage exec "${JAIL_NAME}" sysrc uptimekuma_enable="YES"
 
-if [ "${CADDYSERVER}" == "yes" ];
-then
-
 #####
 #
 # Caddy Installation
 #
 #####
+
+if [ "${CADDYSERVER}" == "yes" ];
+then
 
 # Build xcaddy, use it to build Caddy
 if ! iocage exec "${JAIL_NAME}" "go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest"
