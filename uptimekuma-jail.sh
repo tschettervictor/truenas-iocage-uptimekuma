@@ -108,6 +108,8 @@ rm /tmp/pkg.json
 #####
 
 # Create and mount directories
+iocage exec "${JAIL_NAME}" mkdir -p /mnt/includes/
+iocage fstab -a "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
 mkdir -p "${POOL_PATH}"/uptimekuma/data
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/etc/rc.d/
 iocage exec "${JAIL_NAME}" mkdir -p /var/run/uptimekuma/
